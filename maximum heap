@@ -1,0 +1,25 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+
+int main() {
+    // std::priority_queue is a max heap by default
+    std::priority_queue<int> maxHeap; 
+
+    // Insert elements
+    maxHeap.push(10);
+    maxHeap.push(30);
+    maxHeap.push(20);
+    maxHeap.push(5);
+
+    // Access and remove elements (largest first)
+    std::cout << "Elements in max heap (descending order):" << std::endl;
+    while (!maxHeap.empty()) {
+        std::cout << maxHeap.top() << " "; // Access the top element (O(1))
+        maxHeap.pop();                     // Remove the top element (O(log n))
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
+// Output: 30 20 10 5
