@@ -1,0 +1,37 @@
+class TwoThreeNode:
+    def __init__(self, keys=None):
+        self.keys = keys or []
+        self.children = []
+
+class TwoThreeTree:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, key):
+        if not self.root:
+            self.root = TwoThreeNode([key])
+            return
+
+        node = self.root
+        while node.children:
+            if key < node.keys[0]:
+                node = node.children[0]
+            elif len(node.keys) == 1 or key < node.keys[1]:
+                node = node.children[1]
+            else:
+                node = node.children[2]
+
+        node.keys.append(key)
+        node.keys.sort()
+
+        if len(node.keys) == 3:
+            self.split(node)
+
+    def split(self, node):
+        mid = node.keys[1]
+        left = TwoThreeNode([node.keys[0]])
+        right = TwoThreeNode([node.keys[2]])
+
+        if node == self.root:
+            self.root = TwoThreeNode([mid])
+            self.root.children = [left, right]
