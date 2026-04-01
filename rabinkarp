@@ -1,0 +1,38 @@
+def rabin_karp_search(txt, pat):
+    """
+    Implements the Rabin-Karp algorithm using a rolling hash function.
+    """
+    res = []
+    d = 256  # Alphabet size
+    q = 101  # Prime modulus
+    M = len(pat)
+    N = len(txt)
+
+    if M > N: return res
+
+    h = pow(d, M - 1, q) # Precompute d^(M-1) % q
+    p, t = 0, 0
+
+    # Initial hash calculations
+    for i in range(M):
+        p = (d * p + ord(pat[i])) % q
+        t = (d * t + ord(txt[i])) % q
+
+    # Sliding window
+    for i in range(N - M + 1):
+        if p == t:
+            # Check characters on hash match to avoid collisions
+            if txt[i:i+M] == pat:
+                res.append(i)
+
+        if i < N - M:
+            # Rolling hash update
+            t = (d * (t - ord(txt[i]) * h) + ord(txt[i + M])) % q
+            if t < 0: t += q
+
+    return res
+
+# Usage
+text = "GEEKS FOR GEEKS"
+pattern = "GEEK"
+print(f"Pattern found at indices: {rabin_karp_search(text, pattern)}")
