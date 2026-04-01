@@ -1,0 +1,17 @@
+import numpy as np
+from openmore.pod import POD
+
+# 1. Load your snapshot data (each column is a snapshot)
+snapshots = np.load('your_data.npy')
+
+# 2. Instantiate the POD object
+pod = POD(snapshots)
+
+# 3. Compute the POD
+pod.compute()
+
+# 4. Access POD modes
+modes = pod.modes
+
+# 5. Project data onto reduced space
+reduced_data = pod.project(snapshots)
