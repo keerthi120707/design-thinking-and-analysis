@@ -1,0 +1,93 @@
+import heapq
+from collections import defaultdict, Counter
+
+class HuffmanNode:
+    """A node in the Huffman tree."""
+    def __init__(self, char, freq):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
+
+    # Define less than for heapq to compare nodes based on frequency
+    def __lt__(self, other):
+        return self.freq < other.freq
+
+def build_huffman_tree(text):
+    """Builds the Huffman tree and returns the root node."""
+    frequency = Counter(text)
+    priority_queue = []
+
+    # Create a leaf node for each character and add to the priority queue (min-heap)
+    for char, freq in frequency.items():
+        heapq.heappush(priority_queue, HuffmanNode(char, freq))
+
+    # Combine the two nodes with the lowest frequencies until only one node (the root) remains
+    while len(priority_queue) > 1:
+        left = heapq.heappop(priority_queue)
+        right = heapq.heappop(priority_queue)
+        
+        # Create a new internal node with combined frequency
+        merged_node = HuffmanNode(None, left.freq + right.freq)
+        merged_node.left = left
+        merged_node.right = right
+        
+        heapq.heappush(priority_queue, merged_node)
+
+    return priority_queue[0]
+
+def generate_huffman_codes(node, current_code="", codes={}):
+    """Generates a dictionary of Huffman codes by traversing the tree."""
+    if node is None:
+        return
+
+    # If it's a leaf node, store the code
+    if node.char is not None:
+        codes[node.char] = current_code
+        return
+
+    # Traverse left (add '0') and right (add '1')
+    generate_huffman_codes(node.left, current_code + "0", codes)
+    generate_huffman_codes(node.right, current_code + "1", codes)
+    return codes
+
+def huffman_encoding(text):
+    """Encodes the input text using Huffman coding."""
+    if not text:
+        return "", {}
+
+    root = build_huffman_tree(text)
+    codes = generate_huffman_codes(root)
+
+    # Encode the text using the generated codes
+    encoded_text = "".join([codes[char] for char in text])
+    return encoded_text, codes
+
+def huffman_decoding(encoded_text, codes):
+    """Decodes the Huffman encoded text."""
+    if not encoded_text:
+        return ""
+
+    # Reverse the codes dictionary for decoding
+    reverse_codes = {code: char for char, code in codes.items()}
+    decoded_text = ""
+    current_code = ""
+
+    for bit in encoded_text:
+        current_code += bit
+        # If the current sequence of bits is a valid code, append the character and reset
+        if current_code in reverse_codes:
+            decoded_text += reverse_codes[current_code]
+            current_code = ""
+    
+    return decoded_text
+
+# --- Example Usage ---
+input_string = "this is an example of a huffman tree"
+encoded_string, huffman_codes = huffman_encoding(input_string)
+decoded_string = huffman_decoding(encoded_string, huffman_codes)
+
+print(f"Original string: {input_string}")
+print(f"Encoded string: {encoded_string}")
+print(f"Decoded string: {decoded_string}")
+print(f"Codes: {huffman_codes}")
